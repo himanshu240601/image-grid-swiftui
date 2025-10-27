@@ -11,49 +11,61 @@ struct ImageGalleryView: View {
     
     // MARK: - Properties
     
-    let items = Array(1...30)
+    // view models
+    
+    @StateObject private var imagesVM = ImagesViewModel()
+    
+    // ui state values
     
     let columnsCount = 5
     let spacing: CGFloat = 8
-    
-    var defaultImage: String {
-        Strings.Images.defaultImage
-    }
     
     // MARK: - Body
     
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
+                // calculate total spacing between grids in columns
                 let totalSpacing = spacing * CGFloat(columnsCount - 1)
+                // calculate the size of image grid
                 let itemWidth = (geometry.size.width - totalSpacing) / CGFloat(columnsCount)
                 
-                ScrollView {
-                    LazyVGrid(
-                        columns: Array(
-                            repeating: GridItem(.flexible(), spacing: spacing),
-                            count: columnsCount
-                        ),
-                        spacing: spacing
-                    ) {
-                        ForEach(items, id: \.self) { name in
-                            NavigationLink {
-                                ImageDetailView(image: defaultImage)
-                            } label: {
-                                Image(defaultImage)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(
-                                        width: itemWidth,
-                                        height: itemWidth
-                                    )
-                                    .clipped()
-                                    .cornerRadius(6)
+                if imagesVM.sampleImages.isEmpty {
+                    LoaderView()
+                } else {
+                    ScrollView {
+                        LazyVGrid(
+                            columns: Array(
+                                repeating: GridItem(.flexible(), spacing: spacing),
+                                count: columnsCount
+                            ),
+                            spacing: spacing
+                        ) {
+                            ForEach(imagesVM.sampleImages, id: \.id) { image in
+                                NavigationLink {
+                                    ImageDetailView()
+                                        .environmentObject(imagesVM)
+                                        .onAppear {
+                                            imagesVM.setImageIndex(for: image)
+                                        }
+                                } label: {
+                                    AsyncImage(url: URL(string: image.src.medium)) { phase in
+                                        switch phase {
+                                        case .empty:
+                                            ProgressView()
+                                        case .success(let image):
+                                            image
+                                                .gridImageStyle(itemWidth: itemWidth)
+                                        default:
+                                            Image(systemName: Strings.Images.placeholderImage)
+                                                .gridImageStyle(itemWidth: itemWidth)
+                                        }
+                                    }
+                                }
                             }
-
                         }
+                        .padding(spacing)
                     }
-                    .padding(spacing)
                 }
             }
             .navigationTitle(Strings.NavigationTitles.imageGallery)

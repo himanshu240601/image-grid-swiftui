@@ -17,5 +17,14 @@ struct Strings {
     
     struct Images {
         static let defaultImage = "demo"
+        static let placeholderImage = "photo.badge.exclamationmark.fill"
+    }
+    
+    struct Keys {
+        // code level
+        static let pexelsString = "PEXELS_API_KEY"
+        
+        // api request
+        static let authorization = "Authorization"
     }
 }

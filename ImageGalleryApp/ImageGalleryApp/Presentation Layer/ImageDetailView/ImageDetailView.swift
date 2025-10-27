@@ -11,37 +11,54 @@ struct ImageDetailView: View {
     
     // MARK: - Properties
     
-    let image: String
+    // view models
+    
+    @EnvironmentObject var imagesVM: ImagesViewModel
     
     // MARK: - Body
     
     var body: some View {
         VStack {
-            
-            Text("Image Details Text Caption")
+            Text(imagesVM.imageDescription)
                 .font(.headline)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .padding([.bottom, .horizontal])
             
-            Image(image)
-                .resizable()
-                .scaledToFill()
-                .frame(maxWidth: .infinity)
-                .clipped()
-                .cornerRadius(6)
-                .padding(54)
-                .shadow(
-                    color: .black.opacity(0.05),
-                    radius: 3,
-                    x: 0, y: 3
+            Spacer()
+            
+            TabView(selection: $imagesVM.currentPage) {
+                ForEach(imagesVM.sampleImages, id: \.id) { mainImage in
+                    AsyncImage(url: URL(string: mainImage.src.original)) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                        case .success(let image):
+                            image
+                                .detailImageStyle()
+                        default:
+                            Image(systemName: Strings.Images.placeholderImage)
+                                .detailImageStyle()
+                        }
+                    }
+                    .tag(imagesVM.getImageIndex(for: mainImage))
+                }
+            }
+            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+            
+            ScrollView(.horizontal, content: {
+                DotIndicatorView(
+                    numberOfPages: imagesVM.sampleImages.count,
+                    currentPage: imagesVM.currentPage
                 )
-            
-            DotIndicatorView(numberOfPages: 5, currentPage: 2)
+            })
+            .scrollIndicators(.never)
+            .padding()
         }
-        .padding()
         .navigationTitle(Strings.NavigationTitles.imageDetail)
     }
 }
 
 #Preview {
-    ImageDetailView(image: Strings.Images.defaultImage)
+    ImageDetailView()
+        .environmentObject(ImagesViewModel())
 }
