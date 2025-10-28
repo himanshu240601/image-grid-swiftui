@@ -88,7 +88,7 @@ open ImageGalleryApp.xcodeproj
 3️⃣ Set your development team and signing settings in Xcode (if needed)
 
 4️⃣ Run on simulator or real device
-Choose any iOS 16+ simulator or device and hit **Run (⌘ + R)**
+Choose any iOS 17+ simulator or device and hit **Run (⌘ + R)**
 
 ---
 
