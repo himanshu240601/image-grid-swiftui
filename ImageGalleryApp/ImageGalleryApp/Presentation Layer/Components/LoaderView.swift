@@ -11,7 +11,11 @@ struct LoaderView: View {
     var body: some View {
         VStack {
             Spacer()
-            ProgressView()
+            HStack {
+                Spacer()
+                ProgressView()
+                Spacer()
+            }
             Spacer()
         }
     }

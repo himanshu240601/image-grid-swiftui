@@ -18,6 +18,7 @@ struct Strings {
     struct Images {
         static let defaultImage = "demo"
         static let placeholderImage = "photo.badge.exclamationmark.fill"
+        static let questionMark = "questionmark"
     }
     
     struct Keys {

@@ -28,16 +28,27 @@ struct ImageDetailView: View {
             
             TabView(selection: $imagesVM.currentPage) {
                 ForEach(imagesVM.sampleImages, id: \.id) { mainImage in
-                    AsyncImage(url: URL(string: mainImage.src.original)) { phase in
+                    CacheImage(url: URL(string: mainImage.src.original)!) { phase in
                         switch phase {
-                        case .empty:
-                            ProgressView()
                         case .success(let image):
                             image
                                 .detailImageStyle()
-                        default:
+                        case .failure(_):
                             Image(systemName: Strings.Images.placeholderImage)
-                                .detailImageStyle()
+                                .resizable()
+                                .scaledToFit()
+                                .cornerRadius(6)
+                                .shadow(
+                                    color: .black.opacity(0.05),
+                                    radius: 3,
+                                    x: 0, y: 3
+                                )
+                                .padding(.horizontal)
+                                .tint(.gray.opacity(0.7))
+                        case .empty:
+                            ProgressView()
+                        @unknown default:
+                            Image(systemName: Strings.Images.questionMark)
                         }
                     }
                     .tag(imagesVM.getImageIndex(for: mainImage))

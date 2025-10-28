@@ -49,16 +49,33 @@ struct ImageGalleryView: View {
                                             imagesVM.setImageIndex(for: image)
                                         }
                                 } label: {
-                                    AsyncImage(url: URL(string: image.src.medium)) { phase in
+                                    CacheImage(url: URL(string: image.src.medium)!) { phase in
                                         switch phase {
-                                        case .empty:
-                                            ProgressView()
                                         case .success(let image):
                                             image
                                                 .gridImageStyle(itemWidth: itemWidth)
-                                        default:
+                                        case .failure(_):
                                             Image(systemName: Strings.Images.placeholderImage)
-                                                .gridImageStyle(itemWidth: itemWidth)
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(
+                                                    width: itemWidth,
+                                                    height: itemWidth
+                                                )
+                                                .clipped()
+                                                .cornerRadius(6)
+                                                .tint(.gray.opacity(0.7))
+                                        case .empty:
+                                            ProgressView()
+                                        @unknown default:
+                                            Image(systemName: Strings.Images.questionMark)
+                                        }
+                                    }
+                                }
+                                .onAppear {
+                                    if imagesVM.checkLastImage(for: image) && imagesVM.loadMoreImages {
+                                        Task {
+                                            await imagesVM.fetchPhotos()
                                         }
                                     }
                                 }
@@ -69,6 +86,11 @@ struct ImageGalleryView: View {
                 }
             }
             .navigationTitle(Strings.NavigationTitles.imageGallery)
+            .refreshable {
+                Task {
+                    await imagesVM.fetchPhotos(refresh: true)
+                }
+            }
         }
     }
 }

@@ -15,8 +15,8 @@ struct ImagesDataModel: Codable {
     let next_page: String?
 }
 
-struct ImagesData: Codable {
-    let id: Int
+struct ImagesData: Codable, Identifiable {
+    let id = UUID()
     let width: Int
     let height: Int
     let photographer: String
