@@ -30,7 +30,9 @@ struct ImageGalleryView: View {
                 // calculate the size of image grid
                 let itemWidth = (geometry.size.width - totalSpacing) / CGFloat(columnsCount)
                 
-                if imagesVM.sampleImages.isEmpty {
+                if imagesVM.sampleImages.isEmpty && !imagesVM.errorFetchingImages.isEmpty {
+                    ErrorView(error: imagesVM.errorFetchingImages)
+                } else if imagesVM.sampleImages.isEmpty {
                     LoaderView()
                 } else {
                     ScrollView {
@@ -53,7 +55,9 @@ struct ImageGalleryView: View {
                                 }
                                 .onAppear {
                                     if imagesVM.checkLastImage(for: image) && imagesVM.loadMoreImages {
-                                        imagesVM.startFetchingImages()
+                                        Task {
+                                            await imagesVM.fetchPhotos()
+                                        }
                                     }
                                 }
                             }
@@ -63,9 +67,6 @@ struct ImageGalleryView: View {
                 }
             }
             .navigationTitle(Strings.NavigationTitles.imageGallery)
-            .refreshable {
-                imagesVM.startFetchingImages(refresh: true)
-            }
         }
     }
 }

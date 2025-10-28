@@ -21,6 +21,8 @@ final class ImagesViewModel: ObservableObject {
     @Published var hasMoreData = true
     @Published var isLoadingMore = false
     
+    @Published var errorFetchingImages: String = ""
+    
     // computed properties
     
     var imageDescription: String {
@@ -40,7 +42,9 @@ final class ImagesViewModel: ObservableObject {
     // MARK: - Initializer
     
     init() {
-        startFetchingImages()
+        Task {
+            await fetchPhotos()
+        }
     }
     
     // MARK: - Methods
@@ -73,17 +77,16 @@ final class ImagesViewModel: ObservableObject {
     
     // MARK: - API Methdos
     
-    func startFetchingImages(refresh: Bool = false) {
-        Task {
-            await fetchPhotos(refresh: refresh)
-        }
-    }
-    
     @MainActor
-    private func fetchPhotos(refresh: Bool) async {
+    func fetchPhotos(refresh: Bool = false) async {
         guard loadMoreImages else { return }
         isLoadingMore = true
         defer { isLoadingMore = false }
+        
+        if !errorFetchingImages.isEmpty {
+            // reset errors
+            errorFetchingImages = ""
+        }
         
         if refresh {
             // reset pagination
@@ -118,6 +121,7 @@ final class ImagesViewModel: ObservableObject {
             }
         } catch {
             print(#function, error.localizedDescription)
+            errorFetchingImages = error.localizedDescription
         }
     }
 }

@@ -24,6 +24,7 @@ struct ThumbImageView: View {
                     .tint(.gray.opacity(0.7))
             case .empty:
                 ProgressView()
+                    .frame(width: itemWidth, height: itemWidth)
             @unknown default:
                 Image(systemName: Strings.Images.questionMark)
                     .gridImageStyle(itemWidth: itemWidth)

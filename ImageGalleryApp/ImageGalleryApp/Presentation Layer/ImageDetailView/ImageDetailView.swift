@@ -15,10 +15,6 @@ struct ImageDetailView: View {
     
     @EnvironmentObject var imagesVM: ImagesViewModel
     
-    // state variables
-    
-    @State private var animatePageChange = 1
-    
     // MARK: - Body
     
     var body: some View {
@@ -42,11 +38,8 @@ struct ImageDetailView: View {
                 }
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
-            .animation(.easeInOut(duration: 0.25), value: animatePageChange)
+            .animation(.easeInOut(duration: 0.25), value: imagesVM.currentPage)
             .padding(.bottom, 32)
-            .onChange(of: imagesVM.currentPage) { _, _ in
-                animatePageChange = imagesVM.currentPage
-            }
         }
         .navigationTitle(Strings.NavigationTitles.imageDetail)
     }

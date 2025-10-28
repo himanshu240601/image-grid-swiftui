@@ -19,13 +19,15 @@ struct FullSizeImageView: View {
                     .detailImageStyle()
             case .failure(_):
                 Image(systemName: Strings.Images.placeholderImage)
-                    .detailImageStyle()
+                    .resizable()
+                    .frame(width: 34, height: 34)
                     .tint(.gray.opacity(0.7))
             case .empty:
                 ProgressView()
             @unknown default:
                 Image(systemName: Strings.Images.questionMark)
-                    .detailImageStyle()
+                    .resizable()
+                    .frame(width: 34, height: 34)
                     .tint(.gray.opacity(0.7))
             }
         }
