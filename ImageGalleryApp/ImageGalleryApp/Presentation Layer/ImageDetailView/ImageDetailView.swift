@@ -38,7 +38,6 @@ struct ImageDetailView: View {
                 }
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
-            .animation(.easeInOut(duration: 0.25), value: imagesVM.currentPage)
             .padding(.bottom, 32)
         }
         .navigationTitle(Strings.NavigationTitles.imageDetail)
