@@ -35,7 +35,7 @@ final class ImagesViewModel: ObservableObject {
     // private values
     
     private var currentPageIndex: Int = 1
-    private var imagesFetchLimit: Int = 20
+    private var imagesFetchLimit: Int = 40
     
     // MARK: - Initializer
     
