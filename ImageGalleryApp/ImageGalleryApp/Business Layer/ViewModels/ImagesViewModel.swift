@@ -40,9 +40,7 @@ final class ImagesViewModel: ObservableObject {
     // MARK: - Initializer
     
     init() {
-        Task {
-            await fetchPhotos()
-        }
+        startFetchingImages()
     }
     
     // MARK: - Methods
@@ -75,8 +73,14 @@ final class ImagesViewModel: ObservableObject {
     
     // MARK: - API Methdos
     
+    func startFetchingImages(refresh: Bool = false) {
+        Task {
+            await fetchPhotos(refresh: refresh)
+        }
+    }
+    
     @MainActor
-    func fetchPhotos(refresh: Bool = false) async {
+    private func fetchPhotos(refresh: Bool) async {
         guard loadMoreImages else { return }
         isLoadingMore = true
         defer { isLoadingMore = false }

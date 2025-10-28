@@ -15,6 +15,10 @@ struct ImageDetailView: View {
     
     @EnvironmentObject var imagesVM: ImagesViewModel
     
+    // state variables
+    
+    @State private var animatePageChange = 1
+    
     // MARK: - Body
     
     var body: some View {
@@ -28,42 +32,21 @@ struct ImageDetailView: View {
             
             TabView(selection: $imagesVM.currentPage) {
                 ForEach(imagesVM.sampleImages, id: \.id) { mainImage in
-                    CacheImage(url: URL(string: mainImage.src.original)!) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .detailImageStyle()
-                        case .failure(_):
-                            Image(systemName: Strings.Images.placeholderImage)
-                                .resizable()
-                                .scaledToFit()
-                                .cornerRadius(6)
-                                .shadow(
-                                    color: .black.opacity(0.05),
-                                    radius: 3,
-                                    x: 0, y: 3
-                                )
-                                .padding(.horizontal)
-                                .tint(.gray.opacity(0.7))
-                        case .empty:
-                            ProgressView()
-                        @unknown default:
-                            Image(systemName: Strings.Images.questionMark)
-                        }
+                    ZStack {
+                        // small image (already cached as backround)
+                        FullSizeImageView(imageStringURL: mainImage.src.medium)
+                        // full size image
+                        FullSizeImageView(imageStringURL: mainImage.src.original)
                     }
                     .tag(imagesVM.getImageIndex(for: mainImage))
                 }
             }
-            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-            
-            ScrollView(.horizontal, content: {
-                DotIndicatorView(
-                    numberOfPages: imagesVM.sampleImages.count,
-                    currentPage: imagesVM.currentPage
-                )
-            })
-            .scrollIndicators(.never)
-            .padding()
+            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
+            .animation(.easeInOut(duration: 0.25), value: animatePageChange)
+            .padding(.bottom, 32)
+            .onChange(of: imagesVM.currentPage) { _, _ in
+                animatePageChange = imagesVM.currentPage
+            }
         }
         .navigationTitle(Strings.NavigationTitles.imageDetail)
     }

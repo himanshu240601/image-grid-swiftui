@@ -49,34 +49,11 @@ struct ImageGalleryView: View {
                                             imagesVM.setImageIndex(for: image)
                                         }
                                 } label: {
-                                    CacheImage(url: URL(string: image.src.medium)!) { phase in
-                                        switch phase {
-                                        case .success(let image):
-                                            image
-                                                .gridImageStyle(itemWidth: itemWidth)
-                                        case .failure(_):
-                                            Image(systemName: Strings.Images.placeholderImage)
-                                                .resizable()
-                                                .scaledToFit()
-                                                .frame(
-                                                    width: itemWidth,
-                                                    height: itemWidth
-                                                )
-                                                .clipped()
-                                                .cornerRadius(6)
-                                                .tint(.gray.opacity(0.7))
-                                        case .empty:
-                                            ProgressView()
-                                        @unknown default:
-                                            Image(systemName: Strings.Images.questionMark)
-                                        }
-                                    }
+                                    ThumbImageView(itemWidth: itemWidth, imageStringURL: image.src.medium)
                                 }
                                 .onAppear {
                                     if imagesVM.checkLastImage(for: image) && imagesVM.loadMoreImages {
-                                        Task {
-                                            await imagesVM.fetchPhotos()
-                                        }
+                                        imagesVM.startFetchingImages()
                                     }
                                 }
                             }
@@ -87,9 +64,7 @@ struct ImageGalleryView: View {
             }
             .navigationTitle(Strings.NavigationTitles.imageGallery)
             .refreshable {
-                Task {
-                    await imagesVM.fetchPhotos(refresh: true)
-                }
+                imagesVM.startFetchingImages(refresh: true)
             }
         }
     }

@@ -24,7 +24,6 @@ struct CacheImage<Content>: View where Content: View {
         transaction: Transaction = Transaction(),
         @ViewBuilder content: @escaping (AsyncImagePhase) -> Content
     ) {
-        print("url: \(url.absoluteString)")
         self.url = url
         self.scale = scale
         self.transaction = transaction
@@ -66,7 +65,7 @@ struct CacheImage<Content>: View where Content: View {
             ProgressView()
         case .success(let image):
             image
-        case .failure(let error):
+        case .failure(_):
             Text("**Error**")
                 .font(.system(size: 60))
         @unknown default:
